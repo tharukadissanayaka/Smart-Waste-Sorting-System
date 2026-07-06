@@ -10,3 +10,6 @@ onnx
 onnxruntime
 scikit-learn
 seaborn
+pillow
+numpy
+pandas
