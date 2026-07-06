@@ -1,0 +1,84 @@
+Prompt A — Data Acquisition, Annotation & Preprocessing,YOLOv8 Model Training & Fine-Tuning  (Member: Disanayaka D.M.T.H.)
+You are working in the "Smart-Waste-Sorting-System" repository (folders: app/, data/, models/, scripts/, requirements.txt). Assume `data/data.yaml` and the YOLO-formatted dataset (train/val/test splits under data/images and data/labels) already exist from the data pipeline teammate's work — if they don't exist yet, create a minimal placeholder data.yaml with 4 classes (Plastic, Paper, Glass, Metal) so your code still runs end-to-end.
+
+Your task is to build the model training pipeline in `scripts/` and `models/`:
+
+1. Write `scripts/train.py` using the `ultralytics` package that:
+   - Loads a pretrained YOLOv8 checkpoint (start with yolov8n.pt or yolov8s.pt for speed, given this is a CPU/edge-constrained project) and fine-tunes it via transfer learning on our 4-class waste dataset.
+   - Exposes hyperparameters via argparse or a config file: epochs, batch size, image size (640x640 default), learning rate, and which YOLOv8 variant to use.
+   - Uses CIoU box loss and BCE class loss (Ultralytics defaults — just confirm/document these in comments).
+   - Saves the best and last checkpoints to `models/` (e.g. `models/waste_yolov8_best.pt`).
+   - Logs training curves (loss, mAP) and saves them to `models/training_results/`.
+
+2. Write `scripts/hyperparameter_tuning.py` that runs a small grid/random search (e.g. over learning rate and batch size) using Ultralytics' built-in tuning support or a manual loop, and reports the best configuration found, given limited compute (keep search space small — this should be runnable on a laptop CPU/single GPU in reasonable time).
+
+3. Write `scripts/export_model.py` that exports the trained model to ONNX format in addition to the native .pt, for potential edge deployment, and reports resulting file sizes.
+
+4. Add `models/README.md` documenting: base model used, training config, final training/validation loss and mAP@0.5 achieved, and how to reproduce training from scratch with a single command.
+
+5. Update `requirements.txt` with `ultralytics`, `onnx`, `onnxruntime` if not already present.
+
+Since a full training run may not be feasible in this environment, structure the code so it is correct and runnable, then do a quick smoke test with very few epochs (e.g. 1-2) on whatever sample data is available to confirm the pipeline runs without errors end-to-end (data loads, model trains, checkpoint saves, metrics print). Clearly note in the README what a full training run (target mAP@0.5 >= 85%) would require in terms of epochs/data/hardware.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Prompt B — Evaluation Metrics (Dissanayake D.M.C.)
+You are working in the "Smart-Waste-Sorting-System" repository (folders: app/, data/, models/, scripts/, requirements.txt). Assume a trained YOLOv8 checkpoint exists at `models/waste_yolov8_best.pt` (or `models/waste_yolov8_last.pt`) — if neither exists yet, write your code against the base `yolov8n.pt` pretrained weights so it still runs, and clearly document that metrics will be meaningless until the fine-tuned checkpoint is dropped in.
+
+Your task is to build the core evaluation script in `scripts/`:
+
+1. Write `scripts/evaluate.py` that:
+   - Runs inference on the test split (`data/images/test`) using the trained model.
+   - Computes and reports: mAP@0.5, mAP@0.5:0.95, per-class Precision/Recall, and Intersection over Union (IoU) statistics.
+   - Generates a Confusion Matrix (use Ultralytics' built-in val() output or scikit-learn/matplotlib) highlighting misclassification between visually similar classes (e.g. clear plastic vs glass), and saves it as an image to `models/evaluation/confusion_matrix.png`.
+   - Generates Precision-Recall curves per class and saves them to `models/evaluation/`.
+   - Prints a clean summary table to the console at the end (class name, precision, recall, AP).
+
+2. Add `models/evaluation/README.md` explaining what each output file is and how to regenerate them (`python scripts/evaluate.py`).
+
+3. Update `requirements.txt` with `scikit-learn`, `matplotlib`, `seaborn` if not already present.
+
+Run the script end-to-end against whatever model/checkpoint is currently available in `models/` (even if it's just the pretrained base model) to confirm it executes without errors and produces the output files, then note clearly in the README what should change once the real fine-tuned model and real test set are available.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Prompt C — Contamination Logic, FPS Benchmark & Report (Dissanayake S.S.S.)
+You are working in the "Smart-Waste-Sorting-System" repository (folders: app/, data/, models/, scripts/, requirements.txt). Assume a trained YOLOv8 checkpoint exists at `models/waste_yolov8_best.pt` — if it doesn't exist yet, fall back to `yolov8n.pt` so your code still runs, and document this fallback clearly.
+
+Your task is to build the contamination-logic layer and performance reporting in `scripts/`:
+
+1. Write `scripts/contamination_logic.py` implementing the "logic layer" described in the proposal's research gap/proposed contribution: given a detection's class and confidence score, and optionally simple heuristics (e.g. low confidence + specific class pairs known to be visually similar, like plastic vs glass), output a "contamination risk" flag or confidence-adjusted warning (e.g. "Possible contamination: item classified as Plastic but visually similar to Glass, confidence 0.42"). Keep this simple and rule-based/heuristic (not a second ML model) but structure it so it could be swapped for a learned model later. Include unit tests (plain asserts or pytest) covering a handful of example detection inputs.
+
+2. Write `scripts/fps_benchmark.py` that measures inference speed (FPS) of the model on CPU over a batch of test images, reports whether the >=15 FPS real-time target from the proposal is met, and saves a short report to `models/evaluation/fps_report.txt`.
+
+3. Write `scripts/benchmark_report.py` that aggregates results from `scripts/evaluate.py` (mAP, confusion matrix path — read these from `models/evaluation/` if present, otherwise note "not yet generated"), the FPS report, and a few example outputs from `contamination_logic.py`, into a single Markdown report `models/evaluation/PERFORMANCE_REPORT.md`, formatted so it can be pasted directly into the final project report.
+
+4. Update `requirements.txt` if any new dependencies are needed.
+
+Run everything end-to-end against whatever model/checkpoint and evaluation outputs are currently available to confirm the scripts execute without errors and produce output files. Note clearly in the report what should be re-run once the real fine-tuned model and full evaluation are ready.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Prompt D — Streamlit Interface & Integration (Jayasekara T.H.D.P.U.)
+You are working in the "Smart-Waste-Sorting-System" repository (folders: app/, data/, models/, scripts/, requirements.txt). Assume a trained YOLOv8 checkpoint exists at `models/waste_yolov8_best.pt` — if it doesn't exist yet, fall back to the base `yolov8n.pt` pretrained weights so the app still runs end-to-end, and add a config flag/constant at the top of the app to easily swap in the real checkpoint once it's ready.
+
+Your task is to build the user-facing application in `app/`:
+
+1. Write `app/streamlit_app.py`, a Streamlit web app that:
+   - Lets the user upload an image (jpg/png) or a short video/webcam feed.
+   - Runs YOLOv8 inference (via the `ultralytics` package) on the uploaded input.
+   - Displays the image with color-coded bounding boxes (one color per class: Plastic, Paper, Glass, Metal), class labels, and confidence scores overlaid.
+   - Shows a results panel/table listing each detected item, its class, confidence, and — if `scripts/contamination_logic.py` exists — its contamination risk flag (import and reuse that logic rather than duplicating it; if it doesn't exist yet, add a simple local stub and a TODO comment to wire it in later).
+   - Shows a live-updating FPS/inference-time readout for the current image.
+   - Includes a sidebar with: model info (which checkpoint is loaded), a confidence threshold slider, and a short "About this project" section summarizing the project goal (from the proposal: automated, real-time waste segregation using YOLOv8).
+
+2. Write `app/utils.py` with helper functions (model loading with caching via `st.cache_resource`, drawing bounding boxes, color mapping per class) so `streamlit_app.py` stays clean.
+
+3. Add a `app/README.md` with: how to run the app locally (`streamlit run app/streamlit_app.py`), a screenshot placeholder, and known limitations (e.g. CPU-only inference speed, model still needs full training).
+
+4. Update the top-level `README.md` (create one at repo root if it doesn't exist) with: project title, one-paragraph summary from the proposal, folder structure explanation (app/, data/, models/, scripts/), setup instructions (`pip install -r requirements.txt`), and how to run the full pipeline (data prep -> train -> evaluate -> app) referencing the scripts the other teammates wrote in `scripts/`.
+
+5. Update `requirements.txt` with `streamlit`, `opencv-python`, `pillow` if not already present.
+
+Run the app locally (or at least import/syntax-check all modules and run a smoke test on a sample image) to confirm there are no runtime errors before finishing.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------
+Once these three are done, someone should do one final integration pass to make sure app/streamlit_app.py correctly picks up the real trained model and scripts/contamination_logic.py output.

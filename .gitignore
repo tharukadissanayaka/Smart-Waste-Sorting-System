@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# YOLOv8 specific ignores
+runs/
+*.cache
+datasets/
+yolov8n.pt
+
+# Large model files (Uncomment if you don't want to upload large models to GitHub)
+# *.pt
+# *.onnx
+
+# macOS specific
+.DS_Store
+
+# IDEs / Editor specific
+.vscode/
+.idea/
+
+# Streamlit specific (for Prompt D)
+.streamlit/

@@ -8,3 +8,5 @@ kaggle
 pyyaml
 onnx
 onnxruntime
+scikit-learn
+seaborn
