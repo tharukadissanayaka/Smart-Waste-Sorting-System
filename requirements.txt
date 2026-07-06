@@ -4,3 +4,7 @@ opencv-python
 albumentations
 matplotlib
 torch
+kaggle
+pyyaml
+onnx
+onnxruntime
