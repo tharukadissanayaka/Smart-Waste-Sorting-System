@@ -3,7 +3,7 @@ names:
   1: Paper
   2: Glass
   3: Metal
-path: C:/Users/Tharuka Dissanayake/Documents/GitHub/Smart-Waste-Sorting-System/data
+path: /Users/chamindu/Documents/GitHub/Smart-Waste-Sorting-System/data
 test: images/test
 train: images/train
 val: images/val
