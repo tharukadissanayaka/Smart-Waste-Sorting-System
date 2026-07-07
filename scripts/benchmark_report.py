@@ -19,7 +19,7 @@ scripts_dir = Path(__file__).resolve().parent
 sys.path.append(str(scripts_dir))
 
 try:
-    from contamination_logic import RuleBasedContaminationDetector
+    from contamination_logic import RuleBasedContaminationDetector  # type: ignore
 except ImportError:
     # Fallback definition if import fails
     RuleBasedContaminationDetector = None
