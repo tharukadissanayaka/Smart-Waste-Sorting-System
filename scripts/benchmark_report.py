@@ -242,7 +242,7 @@ The contamination logic acts as a secondary verification step to prevent misclas
     # 6. Save Report
     output_path = eval_dir / "PERFORMANCE_REPORT.md"
     try:
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(report_content)
         print(f"\nAggregated performance report generated successfully at:\n{output_path}")
     except Exception as e:

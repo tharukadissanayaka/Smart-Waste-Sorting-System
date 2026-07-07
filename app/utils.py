@@ -33,25 +33,25 @@ CLASS_COLORS = {
 # Model Loading (cached so it loads only once)
 # ─────────────────────────────────────────────
 @st.cache_resource
-def load_model():
+def load_model(model_choice: str = "Fine-tuned Waste Model"):
     """
     Load YOLOv8 model with caching.
     Tries fine-tuned checkpoint first; falls back to base yolov8n.pt.
     Returns: (model, model_path_used, is_finetuned)
     """
-    if os.path.exists(FINETUNED_MODEL_PATH):
+    if model_choice == "Fine-tuned Waste Model" and os.path.exists(FINETUNED_MODEL_PATH):
         model_path   = FINETUNED_MODEL_PATH
         is_finetuned = True
     else:
         model_path   = FALLBACK_MODEL_PATH
         is_finetuned = False
-        st.warning(
-            f"⚠️ Fine-tuned checkpoint not found at '{FINETUNED_MODEL_PATH}'. "
-            f"Falling back to base '{FALLBACK_MODEL_PATH}'. "
-            "Detections will use COCO classes, not waste classes."
-        )
 
     model = YOLO(model_path)
+    # Warm up the model with a dummy inference to prevent first-run latency lag
+    try:
+        model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False)
+    except Exception:
+        pass
     return model, model_path, is_finetuned
 
 

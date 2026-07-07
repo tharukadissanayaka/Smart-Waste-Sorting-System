@@ -1,23 +1,23 @@
 Smart Waste Sorting System - CPU FPS Benchmark Report
 ======================================================
-Date: 2026-07-07 10:19:09
+Date: 2026-07-07 17:10:51
 Model Checked: waste_yolov8_best.pt
 Device: CPU
-Input Source: Real test dataset (6 source images)
-Number of frames benchmarked: 24
+Input Source: Real test dataset (1227 source images)
+Number of frames benchmarked: 1227
 Simulation Mode: Inactive
 
 Speed Breakdown (average per frame):
 ------------------------------------------------------
-- Preprocess time:  0.10 ms
-- Inference time:   3.07 ms
-- Postprocess time: 0.06 ms
-- Total End-to-End: 3.39 ms
+- Preprocess time:  2.70 ms
+- Inference time:   58.40 ms
+- Postprocess time: 0.93 ms
+- Total End-to-End: 65.38 ms
 
 Throughput:
 ------------------------------------------------------
-- Pure Inference:   325.32 FPS
-- End-to-End:       294.88 FPS
+- Pure Inference:   17.12 FPS
+- End-to-End:       15.30 FPS
 
 Target Status:
 ------------------------------------------------------
@@ -26,5 +26,5 @@ Target Status:
 
 Conclusion:
 ------------------------------------------------------
-The system achieved 294.88 FPS (end-to-end) on CPU. 
+The system achieved 15.30 FPS (end-to-end) on CPU. 
 This meets the real-time target of 15.0 FPS.

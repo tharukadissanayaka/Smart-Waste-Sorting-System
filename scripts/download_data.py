@@ -56,11 +56,12 @@ def setup_args() -> argparse.ArgumentParser:
 
 def check_kaggle_credentials() -> bool:
     """Check if Kaggle credentials are set up."""
-    if os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY"):
+    if os.environ.get("KAGGLE_API_TOKEN") or (os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY")):
         return True
     kaggle_home = Path.home() / ".kaggle"
     kaggle_json = kaggle_home / "kaggle.json"
-    return kaggle_json.exists()
+    access_token = kaggle_home / "access_token"
+    return kaggle_json.exists() or access_token.exists()
 
 
 def generate_synthetic_data(output_dir: Path):
@@ -164,8 +165,8 @@ def download_kaggle(kaggle_dir: Path):
     """Download Kaggle dataset using the kaggle package API."""
     if not check_kaggle_credentials():
         raise ValueError(
-            "Kaggle credentials not found. Please place `kaggle.json` in ~/.kaggle/ "
-            "or set KAGGLE_USERNAME and KAGGLE_KEY environment variables."
+            "Kaggle credentials not found. Please save your API token to ~/.kaggle/access_token, "
+            "place kaggle.json in ~/.kaggle/, or set the KAGGLE_API_TOKEN environment variable."
         )
     
     # Import kaggle here to avoid import error during dry-run if not installed

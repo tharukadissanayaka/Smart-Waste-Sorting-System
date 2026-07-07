@@ -68,7 +68,7 @@ st.set_page_config(
 # SIDEBAR
 # ═════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/recycle.png", width=80)
+    st.image("app/logo.svg", width=80)
     st.title("⚙️ Settings & Info")
 
     st.markdown("---")
@@ -87,16 +87,23 @@ with st.sidebar:
     st.markdown("---")
 
     # ── Model Info ───────────────────────────────────────────────────────────
-    st.subheader("🤖 Model Info")
-    model_exists = os.path.exists(FINETUNED_MODEL_PATH)
-    if model_exists:
-        st.success(f"✅ Using fine-tuned model:\n`{FINETUNED_MODEL_PATH}`")
+    st.subheader("🤖 Model Settings")
+    model_options = []
+    if os.path.exists(FINETUNED_MODEL_PATH):
+        model_options.append("Fine-tuned Waste Model")
+    model_options.append("Pretrained COCO Model")
+
+    model_choice = st.selectbox(
+        "Select Model Checkpoint:",
+        options=model_options,
+        index=0,
+        help="Switch between the fine-tuned waste classification model and the general pretrained COCO model."
+    )
+
+    if model_choice == "Fine-tuned Waste Model":
+        st.success(f"✅ Active:\n`{FINETUNED_MODEL_PATH}`")
     else:
-        st.warning(
-            f"⚠️ Fine-tuned model not found.\n"
-            f"Using fallback: `{FALLBACK_MODEL_PATH}`\n\n"
-            "Drop `waste_yolov8_best.pt` into `models/` to enable waste-specific detection."
-        )
+        st.info(f"ℹ️ Active:\n`{FALLBACK_MODEL_PATH}` (COCO classes)")
 
     st.markdown(f"**Contamination Logic:** `{CONTAMINATION_SOURCE}`")
     st.markdown("**Classes:** Plastic · Paper · Glass · Metal")
@@ -155,7 +162,7 @@ st.markdown(
 
 # ── Load Model ────────────────────────────────────────────────────────────────
 with st.spinner("Loading model..."):
-    model, model_path_used, is_finetuned = load_model()
+    model, model_path_used, is_finetuned = load_model(model_choice)
 
 st.markdown("---")
 
@@ -183,7 +190,7 @@ if input_mode == "📁 Upload Image":
 
         with col1:
             st.subheader("📷 Original Image")
-            st.image(image_pil, use_column_width=True)
+            st.image(image_pil, width="stretch")
 
         # ── Run Inference ─────────────────────────────────────────────────
         with st.spinner("Running inference..."):
@@ -193,7 +200,7 @@ if input_mode == "📁 Upload Image":
 
         with col2:
             st.subheader("🔍 Detection Results")
-            st.image(annotated_img, use_column_width=True)
+            st.image(annotated_img, width="stretch")
 
         # ── FPS Readout ───────────────────────────────────────────────────
         st.markdown("---")
@@ -250,7 +257,7 @@ if input_mode == "📁 Upload Image":
             st.markdown("**Summary Table:**")
             import pandas as pd
             df = pd.DataFrame(table_data).drop(columns=["Message"])
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, width="stretch")
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -269,7 +276,7 @@ elif input_mode == "🎥 Webcam (Live)":
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("📷 Captured Frame")
-            st.image(image_pil, use_column_width=True)
+            st.image(image_pil, width="stretch")
 
         with st.spinner("Running inference on webcam frame..."):
             detections, fps, annotated_img = run_inference(
@@ -278,7 +285,7 @@ elif input_mode == "🎥 Webcam (Live)":
 
         with col2:
             st.subheader("🔍 Detection Results")
-            st.image(annotated_img, use_column_width=True)
+            st.image(annotated_img, width="stretch")
 
         st.metric("⚡ FPS (this frame)", f"{fps:.1f}")
         st.metric("📦 Detections Found", len(detections))

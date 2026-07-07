@@ -15,6 +15,11 @@ runs/
 datasets/
 yolov8n.pt
 
+# Ignore large datasets and raw downloads
+data/raw/
+data/images/
+data/labels/
+
 # Large model files (Uncomment if you don't want to upload large models to GitHub)
 # *.pt
 # *.onnx

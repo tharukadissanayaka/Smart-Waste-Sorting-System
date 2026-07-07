@@ -93,7 +93,12 @@ def process_kaggle_dataset(raw_kaggle_dir: Path) -> list[dict]:
         print(f"[INFO] Kaggle raw directory not found at {raw_kaggle_dir}. Skipping Kaggle dataset.")
         return samples
 
-    print("Processing Kaggle Garbage Classification v2 dataset...")
+    # If the Kaggle dataset was downloaded with subfolders like 'original', use that
+    original_dir = raw_kaggle_dir / "original"
+    if original_dir.exists():
+        raw_kaggle_dir = original_dir
+
+    print(f"Processing Kaggle Garbage Classification v2 dataset from {raw_kaggle_dir}...")
     # List subdirectories (representing classes)
     for class_path in raw_kaggle_dir.iterdir():
         if not class_path.is_dir():

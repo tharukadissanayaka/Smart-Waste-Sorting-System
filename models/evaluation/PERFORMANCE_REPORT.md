@@ -1,5 +1,5 @@
 # Smart Waste Sorting System - Performance Report
-Generated on: 2026-07-07 10:19:09
+Generated on: 2026-07-07 17:12:22
 
 This report aggregates the system's performance metrics, CPU inference throughput, and the results from the contamination verification logic layer. It is designed to be copy-pasted directly into the final project report.
 
@@ -49,18 +49,18 @@ To meet the system's real-time sorting requirement, the model must process incom
 
 - **Model Checked:** `waste_yolov8_best.pt`
 - **Device:** CPU
-- **Average Preprocess Time:** `0.10 ms`
-- **Average Inference Time:** `3.07 ms`
-- **Average Postprocess Time:** `0.06 ms`
-- **Average End-to-End Time:** `3.39 ms`
+- **Average Preprocess Time:** `2.70 ms`
+- **Average Inference Time:** `58.40 ms`
+- **Average Postprocess Time:** `0.93 ms`
+- **Average End-to-End Time:** `65.38 ms`
 
 ### Throughput Rates
-- **Pure Inference throughput:** `325.32 FPS`
-- **End-to-End frame rate:** `294.88 FPS`
+- **Pure Inference throughput:** `17.12 FPS`
+- **End-to-End frame rate:** `15.30 FPS`
 
 ### Real-Time Target
 - **Required Minimum:** `>= 15.0 FPS`
-- **Target Status:** 🟢 **MET** (Achieved `294.88 FPS`)
+- **Target Status:** 🟢 **MET** (Achieved `15.30 FPS`)
 
 ---
 
