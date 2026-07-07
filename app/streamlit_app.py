@@ -183,7 +183,7 @@ if input_mode == "📁 Upload Image":
 
         with col1:
             st.subheader("📷 Original Image")
-            st.image(image_pil, use_column_width=True)
+            st.image(image_pil, use_container_width=True)
 
         # ── Run Inference ─────────────────────────────────────────────────
         with st.spinner("Running inference..."):
@@ -193,7 +193,7 @@ if input_mode == "📁 Upload Image":
 
         with col2:
             st.subheader("🔍 Detection Results")
-            st.image(annotated_img, use_column_width=True)
+            st.image(annotated_img, use_container_width=True)
 
         # ── FPS Readout ───────────────────────────────────────────────────
         st.markdown("---")
@@ -269,7 +269,7 @@ elif input_mode == "🎥 Webcam (Live)":
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("📷 Captured Frame")
-            st.image(image_pil, use_column_width=True)
+            st.image(image_pil, use_container_width=True)
 
         with st.spinner("Running inference on webcam frame..."):
             detections, fps, annotated_img = run_inference(
@@ -278,7 +278,7 @@ elif input_mode == "🎥 Webcam (Live)":
 
         with col2:
             st.subheader("🔍 Detection Results")
-            st.image(annotated_img, use_column_width=True)
+            st.image(annotated_img, use_container_width=True)
 
         st.metric("⚡ FPS (this frame)", f"{fps:.1f}")
         st.metric("📦 Detections Found", len(detections))

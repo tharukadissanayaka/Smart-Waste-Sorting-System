@@ -101,6 +101,14 @@ def main():
     
     # Run training
     # CIoU loss and BCE loss are used by default inside Ultralytics YOLOv8 detection head.
+    import torch
+    if torch.cuda.is_available():
+        device = "0"
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
+
     results = model.train(
         data=str(data_path),
         epochs=args.epochs,
@@ -109,7 +117,7 @@ def main():
         lr0=args.lr,
         project=str(project_dir),
         name=args.name,
-        device="cpu",  # default to CPU for portability/dry-runs; can be updated to GPU (device=0)
+        device=device,
         workers=0      # 0 workers avoids multiprocessing issues on Windows/laptops
     )
 
