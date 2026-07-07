@@ -1,6 +1,6 @@
 # Smart Waste Sorting System
 
-An automated, real-time waste segregation and classification system powered by computer vision. This project uses the YOLOv8 object detection model to identify and sort waste into four distinct categories: **Plastic, Paper, Glass, and Metal**. 
+An automated, real-time waste segregation and classification system powered by computer vision. This project uses the YOLOv8 object detection model to identify and sort waste into six distinct categories: **Biodegradable, Cardboard, Glass, Metal, Paper, and Plastic**. 
 
 By running inference in real-time, the system aims to improve recycling efficiency and reduce contamination at sorting facilities or in smart bins.
 
@@ -49,10 +49,14 @@ pip install -r requirements.txt
 The project is designed to be run sequentially from training to evaluation to deployment.
 
 ### 1. Training the Model
-To fine-tune the YOLOv8 model on the waste dataset, run the training script. This script will automatically save the best and last checkpoints to the `models/` directory.
+To fine-tune the YOLOv8 model on the waste dataset, run the training script. This script will automatically save the best and last checkpoints to the `models/` directory. It also automatically detects and utilizes hardware acceleration (CUDA for Nvidia GPUs, or MPS for Apple Silicon) if available, speeding up training significantly.
+
 ```bash
 python scripts/train.py
 ```
+
+**Alternative: Cloud Training (Google Colab)**
+For very large datasets, we highly recommend training on a cloud GPU. You can run your YOLOv8 training inside Google Colab and use `kagglehub` to directly pull datasets (e.g., `viswaprakash1990/garbage-detection`). Once finished, simply download the `best.pt` weights file and place it in this project's `models/` directory.
 
 ### 2. Evaluating the Model
 Once the model is trained, evaluate its performance on the test dataset. This will output mAP, Precision, and Recall metrics, and save visualization charts (Confusion Matrix, PR Curves) to `models/evaluation/`.
