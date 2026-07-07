@@ -7,7 +7,6 @@ Supports benchmarking using real test images or synthetic input if no images are
 Saves a detailed report to models/evaluation/fps_report.txt.
 """
 
-import os
 import time
 import datetime
 from pathlib import Path
@@ -17,13 +16,14 @@ TARGET_FPS = 15.0
 
 # Safe imports with simulation fallbacks
 try:
-    import numpy as np
+    import numpy as np  # type: ignore
     HAS_NUMPY = True
 except ImportError:
+    np = None  # Define default value for static analysis tools
     HAS_NUMPY = False
 
 try:
-    from ultralytics import YOLO
+    from ultralytics import YOLO  # type: ignore
     HAS_ULTRALYTICS = True
 except ImportError:
     HAS_ULTRALYTICS = False
@@ -92,7 +92,11 @@ def benchmark_model():
         else:
             print("Note: running simulation mode using mock weights.")
 
-    model = YOLO(str(model_path))
+    try:
+        model = YOLO(str(model_path))
+    except Exception as e:
+        print(f"[ERROR] Failed to load model: {e}")
+        return
 
     # 3. Locate Test Images or Fallback to Synthetic
     test_images_dir = repo_root / "data" / "images" / "test"
@@ -111,10 +115,10 @@ def benchmark_model():
         use_synthetic = True
         if HAS_NUMPY:
             dummy_img = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-            inputs = [dummy_img]
+            inputs = [dummy_img] * 50
         else:
             # Mock image path to trigger mock inference
-            inputs = ["dummy_synthetic_image.jpg"]
+            inputs = ["dummy_synthetic_image.jpg"] * 50
         num_frames = 50  # Run 50 iterations on synthetic image
     else:
         print(f"Found {len(image_paths)} real test images for benchmarking.")
@@ -130,7 +134,11 @@ def benchmark_model():
     print("Warming up CPU cache (10 iterations)...")
     warmup_input = inputs[0]
     for _ in range(10):
-        _ = model(warmup_input, device="cpu", verbose=False)
+        try:
+            _ = model(warmup_input, device="cpu", verbose=False)
+        except Exception as e:
+            print(f"[WARNING] Warmup run failed: {e}")
+            break
 
     # 5. Benchmarking Loop
     print(f"Running benchmark on {num_frames} frames...")
@@ -142,7 +150,11 @@ def benchmark_model():
 
     for item in inputs:
         t_start = time.perf_counter()
-        results = model(item, device="cpu", verbose=False)
+        try:
+            results = model(item, device="cpu", verbose=False)
+        except Exception as e:
+            print(f"[ERROR] Inference failed on frame: {e}")
+            continue
         t_end = time.perf_counter()
         e2e_times.append((t_end - t_start) * 1000)  # ms
         
@@ -151,6 +163,10 @@ def benchmark_model():
             preprocess_times.append(speed.get("preprocess", 0.0))
             inference_times.append(speed.get("inference", 0.0))
             postprocess_times.append(speed.get("postprocess", 0.0))
+
+    if not e2e_times:
+        print("[ERROR] No successful inference benchmark runs recorded.")
+        return
 
     # 6. Calculate Average Metrics (using standard mean math)
     avg_preprocess = mean(preprocess_times)

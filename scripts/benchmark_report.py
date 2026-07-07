@@ -73,8 +73,12 @@ def generate_report():
             with open(fps_report_path, "r") as f:
                 lines = f.readlines()
             for line in lines:
-                if "Inference time:" in line:
+                if "Preprocess time:" in line:
+                    fps_info["preprocess_time"] = line.split(":")[-1].strip()
+                elif "Inference time:" in line:
                     fps_info["inference_time"] = line.split(":")[-1].strip()
+                elif "Postprocess time:" in line:
+                    fps_info["postprocess_time"] = line.split(":")[-1].strip()
                 elif "Total End-to-End:" in line:
                     fps_info["e2e_time"] = line.split(":")[-1].strip()
                 elif "Pure Inference:" in line:
